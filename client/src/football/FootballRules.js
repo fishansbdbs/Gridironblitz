@@ -19,7 +19,7 @@ export function applyPlayResult(state, result) {
   if (result.type === 'interception') {
     state.stats[opponent].interceptions += 1; resetDrive(state, opponent); state.yardLine = Math.max(20, 100 - end); state.lineOfScrimmage = state.yardLine; entry.message = 'Interception!';
   } else if (result.type === 'touchdown' || end >= 100) {
-    state.score[side] += 7; state.stats[side].touchdowns += 1; if (result.pass) state.stats[side].passingYards += Math.max(0, 100 - start); else state.stats[side].rushingYards += Math.max(0, 100 - start); entry.message = 'Touchdown!'; if (state.score[side] >= BALANCE.firstScoreWins && state.mode !== 'practice') state.winner = side === 'home' ? state.homeTeam.name : state.awayTeam.name; resetDrive(state, opponent);
+    state.score[side] += 7; state.stats[side].touchdowns += 1; if (result.pass) state.stats[side].passingYards += Math.max(0, 100 - start); else state.stats[side].rushingYards += Math.max(0, 100 - start); entry.message = 'Touchdown!'; if (state.score[side] >= (state.scoreTarget ?? BALANCE.firstScoreWins) && state.mode !== 'practice') state.winner = side === 'home' ? state.homeTeam.name : state.awayTeam.name; resetDrive(state, opponent);
   } else if (result.type === 'incomplete') {
     state.down += 1; entry.message = 'Incomplete pass.';
   } else {

@@ -1,9 +1,9 @@
 export const FIELD = {
-  width: 54,
+  width: 58,
   length: 100,
   endZone: 10,
-  leftBound: -27,
-  rightBound: 27
+  leftBound: -29,
+  rightBound: 29
 };
 
 export const ROLES = {
@@ -16,7 +16,12 @@ export const SETTINGS_DEFAULTS = {
   crowdVolume: 0.45,
   sfxVolume: 0.8,
   camera: 'Classic',
+  difficulty: 'Pro',
+  scoreTarget: 14,
   graphics: 'Performance',
   scanlines: true,
   shake: true
 };
+
+export const VERSION = 'v0.3.0';
+export const UPDATE_NAME = 'Gameplay Feel & Model Upgrade';

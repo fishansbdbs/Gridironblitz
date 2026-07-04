@@ -1,8 +1,8 @@
 # GRIDIRON BLITZ 97
 
-v0.1.0 - PS1 Arcade Football Prototype
+v0.3.0 - Gameplay Feel & Model Upgrade
 
-Gridiron Blitz 97 is an original low-poly 3D arcade American football game built with Vite, Three.js, HTML, CSS, LocalStorage, and the Web Audio API. It uses fictional teams, procedural models, generated sounds, and local-only play.
+Gridiron Blitz 97 is an original low-poly 3D arcade American football game built with Vite, Three.js, HTML, CSS, LocalStorage, and the Web Audio API. It uses fictional teams, fictional players, procedural models, generated sounds, and local-only play.
 
 ## Play Locally On Windows
 
@@ -30,12 +30,6 @@ npm run play
 http://localhost:5173
 ```
 
-The play command prints:
-
-```text
-Open this URL: http://localhost:5173
-```
-
 ## Scripts
 
 ```bash
@@ -53,14 +47,20 @@ npm run check
 - `Enter` or `Space`: select play or snap the ball.
 - `WASD`: move the ball carrier.
 - `Shift`: sprint.
-- `Space` after snap: juke.
+- `Space` after snap: juke/cut.
 - `1`: throw/select WR1.
 - `2`: throw/select WR2.
 - `3`: throw/select TE.
 - `4`: throw/select RB.
 - `Esc`: return to main menu.
 
-Defense is mostly CPU-controlled in v0.1.0. During CPU possessions, the player can influence the linebacker while the CPU offense runs a simple play.
+## Camera Modes
+
+- Classic: behind-offense retro football camera.
+- Broadcast: side/diagonal wide football view.
+- Ball Cam: follows the ball or current ball carrier more tightly.
+
+Camera mode, difficulty, score target, graphics, scanlines, and screen shake are saved locally from Settings.
 
 ## Rules
 
@@ -69,38 +69,72 @@ Defense is mostly CPU-controlled in v0.1.0. During CPU possessions, the player c
 - Touchdowns are worth 7 points.
 - No extra points, field goals, punts, penalties, injuries, trades, or online play.
 - Turnover on downs after failing on 4th down.
-- Interceptions can happen on contested passes.
-- First to 14 wins in Exhibition.
-- Practice mode has no score limit.
-- Drives start at the offense's 25-yard line.
+- Interceptions switch possession.
+- Out of bounds stops the play.
+- Exhibition ends at the selected score target, 14 by default.
+- Practice mode does not end the game.
 
-## Teams
+## Teams And Stars
 
-- Metro Mammoths: balanced blue, white, and silver team.
-- Desert Vipers: fast red, black, and gold team.
-- Iron Owls: passing-focused purple, steel, and white team.
-- Bayou Bulls: physical green, cream, and bronze team.
+- Metro Mammoths: balanced pocket team. Star QB: Atlas Reed.
+- Desert Vipers: speed and pressure team. Star WR: Jax Venom.
+- Iron Owls: passing and route-running team. Star QB: Orion Vale.
+- Bayou Bulls: power running and blocking team. Star RB: Bronco Moss.
 
-Edit `client/src/data/teams.js` to add teams. Use fictional names, colors, logos, and player identities only.
+Each team has fictional rosters, procedural logos, home uniforms, away uniforms, and stat identities.
 
 ## Stadiums
 
-- Metro Dome: closed roof, blue lights, digital scoreboard.
-- Desert Bowl: sunset desert stadium with canyon props.
-- Iron Yard: industrial night stadium with steel accents.
-- Bayou Field: swampy outdoor field with foggy green lighting.
+- Metro Dome: indoor city dome with blue lighting and ribbon boards.
+- Desert Bowl: sunset stadium with canyon silhouettes and dusty edges.
+- Iron Yard: industrial night stadium with factory props.
+- Bayou Field: swamp stadium with fog, water, trees, and wooden-stand atmosphere.
 
-Edit `client/src/data/stadiums.js` to add stadiums. Stadium visuals are procedural and read by `client/src/football/Stadium.js`.
+Every stadium uses a grass field, yard lines, hash marks, end zones, midfield logo, crowd blocks, goalposts, and a physical scoreboard.
 
-## Plays
+## Gameplay Systems
 
-The playbook lives in `client/src/data/plays.js` and includes Quick Slants, Deep Posts, Flood Right, Smash, HB Dive, Sweep Left, QB Rollout, and TE Drag.
+Collision uses simple XZ circle bodies. Players push apart based on radius and mass, so defenders and blockers no longer freely phase through each other.
+
+Blocking is arcade-style: offensive linemen identify rushers, engage on contact, slow rushers, and create a pocket. Blocking duration depends on blocking and strength against rusher strength and speed.
+
+Tackling is collision-triggered. Tackle outcomes consider tackling, strength, carrier strength, speed, angle, and nearby helpers. Outcomes include tackle, big hit, gang tackle, and broken tackle.
+
+Passing uses QB accuracy/power, receiver catching/route running, defender coverage, distance, separation, and pressure. Feedback includes open target, under pressure, deflected, intercepted, dropped, and incomplete.
+
+## Player Stats
+
+Players use:
+
+- Speed
+- Acceleration
+- Strength
+- Blocking
+- Tackling
+- Catching
+- Throw Accuracy
+- Throw Power
+- Route Running
+- Coverage
+- Agility
+- Mass
+
+Team identity expands into position-based player ratings. Linemen are heavier blockers, WR/DB players are faster and lighter, QBs pass better, and RBs cut with more power.
+
+## Add Content
+
+Add teams in `client/src/data/teams.js`. Keep all names, logos, colors, and players fictional.
+
+Add stadiums in `client/src/data/stadiums.js`. Stadium props are selected by the `props` field and rendered procedurally in `client/src/game/Game.js`.
+
+Add plays in `client/src/data/plays.js`. Each play includes a formation, type, situation, description, recommended target, and route points for eligible receivers.
+
+Add animations by extending the transform animation logic in `client/src/game/Game.js`. The current system is bone-less: arms, legs, torso lean, block push, catch pose, and contact lean are simple mesh transforms.
 
 ## Known Limitations
 
-- This is an arcade prototype, not a simulation.
-- Defense is intentionally simple.
-- CPU offense is functional but basic.
-- Animations are chunky procedural motion rather than authored clips.
-- No roster management, season mode, franchise mode, online multiplayer, punts, field goals, or penalties.
-- Mouse passing is not the primary input; number-key passing is the reliable v0.1.0 method.
+- This is still an arcade prototype, not a full football simulation.
+- AI is readable and functional, but not deeply strategic.
+- The physical scoreboard uses simplified text.
+- There are no punts, field goals, penalties, extra points, franchise mode, season mode, roster management, or online multiplayer.
+- Browser bundle size includes Three.js and may trigger Vite's chunk-size warning even when the build succeeds.
