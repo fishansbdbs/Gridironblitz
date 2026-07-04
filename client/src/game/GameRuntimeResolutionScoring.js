@@ -12,7 +12,9 @@ export const gameRuntimeScoringMethods = {
     applyPlayResult(this.match, result);
     if (this.match.score.home >= (this.match.scoreTarget ?? this.settings.scoreTarget)) this.match.winner = this.match.homeTeam.name;
     if (this.match.score.away >= (this.match.scoreTarget ?? this.settings.scoreTarget)) this.match.winner = this.match.awayTeam.name;
-    this.status = result.message || this.match.history[0]?.message || `${result.yards} yards.`;
+    const baseStatus = result.message || this.match.history[0]?.message || `${result.yards} yards.`;
+    const readFeedback = this.lastReadFeedback || this.readModifier?.feedback;
+    this.status = readFeedback && !baseStatus.includes(readFeedback) ? `${baseStatus} ${readFeedback}` : baseStatus;
     this.banner = bannerFor(result, this.status);
     this.sound(result.type === 'touchdown' ? 'touchdown' : result.type === 'interception' ? 'turnover' : result.type === 'incomplete' ? 'whistle' : 'tackle');
     this.shake = result.type === 'touchdown' ? 0.22 : 0.13;
@@ -25,6 +27,7 @@ export const gameRuntimeScoringMethods = {
       this.phase = 'play-select';
       this.banner = '';
       this.lineup();
+      this.setDefensiveRead?.(this.currentPlay, this.target);
       this.renderHud();
       if (this.match.possession === 'away' && this.mode !== 'practice') {
         setTimeout(() => {

@@ -23,5 +23,5 @@ export const SETTINGS_DEFAULTS = {
   shake: true
 };
 
-export const VERSION = 'v0.3.0';
-export const UPDATE_NAME = 'Gameplay Feel & Model Upgrade';
+export const VERSION = 'v0.4.0';
+export const UPDATE_NAME = 'Pre-Snap Chess Update';

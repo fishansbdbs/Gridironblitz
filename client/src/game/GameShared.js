@@ -7,9 +7,11 @@ import { createMatchState, applyPlayResult, displayYardLine, ordinal } from '../
 import {
   archetypeForRole,
   buildPlayerRatings,
+  chooseDefensiveLook,
   resolveBlockMatchup,
   resolvePassOutcome,
   resolvePlayerCollisions,
+  resolveReadModifier,
   resolveTackleOutcome
 } from '../football/ArcadeMechanics.js';
 
@@ -29,9 +31,11 @@ export {
   ordinal,
   archetypeForRole,
   buildPlayerRatings,
+  chooseDefensiveLook,
   resolveBlockMatchup,
   resolvePassOutcome,
   resolvePlayerCollisions,
+  resolveReadModifier,
   resolveTackleOutcome
 };
 

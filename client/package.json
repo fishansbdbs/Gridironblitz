@@ -1,6 +1,6 @@
 {
   "name": "gridiron-blitz-97-client",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "scripts": {

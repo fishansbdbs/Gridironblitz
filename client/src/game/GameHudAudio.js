@@ -56,6 +56,10 @@ export const gameHudAudioMethods = {
     const away = this.match.awayTeam;
     const clock = this.gameClock == null ? 'Practice' : `${Math.floor(this.gameClock / 60)}:${String(Math.floor(this.gameClock % 60)).padStart(2, '0')}`;
     const selectedPlay = PLAYS[this.playIndex] ?? this.currentPlay;
+    const read = this.defensiveLook;
+    const readLine = read
+      ? `<div class="hud-read"><span class="read-chip">${read.label}</span><span>${read.hint}</span></div>`
+      : '';
     let html = `
       <div class="hud scoreboard">
         <div class="team-chip">${logoHtml(home)} <strong>${home.shortName}</strong> ${this.match.score.home}</div>
@@ -63,6 +67,7 @@ export const gameHudAudioMethods = {
         <div class="team-chip away">${logoHtml(away)} <strong>${away.shortName}</strong> ${this.match.score.away}</div>
         <div class="hud-line">${ordinal(this.match.down)} &amp; ${this.match.toGo} | Ball on ${displayYardLine(this.match)} | Target ${this.settings.scoreTarget}</div>
         <div class="hud-line">Play: ${this.currentPlay?.formation ?? ''} ${this.currentPlay?.name ?? 'Pick a play'} | Target: ${this.target} | ${this.settings.camera}</div>
+        ${readLine}
         <div class="hud-status">${this.status}</div>
       </div>
       ${this.banner ? `<div class="banner">${this.banner}</div>` : ''}
@@ -76,6 +81,7 @@ export const gameHudAudioMethods = {
             <span>${ordinal(this.match.down)} &amp; ${this.match.toGo} - ${selectedPlay.situation}</span>
           </div>
           <div class="route-preview">${routePreview(selectedPlay)}</div>
+          ${read ? `<div class="read-panel"><span class="read-chip">Read: ${read.label}</span><strong>${read.hint}</strong><small>Risk: ${read.risk}</small></div>` : ''}
           <div class="play-grid">${PLAYS.map((play, index) => playCard(play, index === this.playIndex)).join('')}</div>
           ${this.mode === 'practice' ? '<button data-action="practice-reset">Reset Play</button>' : ''}
         </section>

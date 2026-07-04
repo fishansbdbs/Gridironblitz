@@ -2,9 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   buildPlayerRatings,
+  chooseDefensiveLook,
   resolveBlockMatchup,
   resolvePassOutcome,
   resolvePlayerCollisions,
+  resolveReadModifier,
   resolveTackleOutcome
 } from '../client/src/football/ArcadeMechanics.js';
 import { TEAMS } from '../client/src/data/teams.js';
@@ -92,4 +94,56 @@ test('tackle outcome rewards angle and strength but allows rare broken tackles',
   assert.equal(clean.message, 'Gang tackle!');
   assert.equal(broken.result, 'broken');
   assert.equal(broken.message, 'Broken tackle!');
+});
+
+test('defensive look selection responds to down distance and identity', () => {
+  const passLook = chooseDefensiveLook({
+    down: 3,
+    toGo: 9,
+    yardLine: 42,
+    scoreMargin: -7,
+    playType: 'pass',
+    defenseTeam: TEAMS[1],
+    roll: 0.18
+  });
+  const runLook = chooseDefensiveLook({
+    down: 3,
+    toGo: 1,
+    yardLine: 62,
+    scoreMargin: 4,
+    playType: 'run',
+    defenseTeam: TEAMS[3],
+    roll: 0.18
+  });
+
+  assert.equal(passLook.id, 'edge-heat');
+  assert.equal(runLook.id, 'stone-box');
+  assert.match(passLook.hint, /quick/i);
+  assert.match(runLook.hint, /perimeter|quick/i);
+});
+
+test('read modifiers create original risk reward feedback', () => {
+  const quickPass = resolveReadModifier({
+    play: { type: 'pass', id: 'quick-slants', recommendedTarget: 'WR1' },
+    look: { id: 'edge-heat', pressure: 0.22, coverage: -0.04, runFit: 0.04, disguise: 0.02 },
+    targetRole: 'WR1'
+  });
+  const stuffedRun = resolveReadModifier({
+    play: { type: 'run', id: 'hb-dive', recommendedTarget: 'RB' },
+    look: { id: 'stone-box', pressure: 0.02, coverage: -0.02, runFit: 0.24, disguise: 0.01 },
+    targetRole: 'RB'
+  });
+  const lightRun = resolveReadModifier({
+    play: { type: 'run', id: 'sweep-left', recommendedTarget: 'RB' },
+    look: { id: 'deep-lantern', pressure: -0.04, coverage: 0.18, runFit: -0.2, disguise: 0.03 },
+    targetRole: 'RB'
+  });
+
+  assert.ok(quickPass.pressure > 0);
+  assert.ok(quickPass.separation > 0);
+  assert.match(quickPass.feedback, /heat|quick/i);
+  assert.ok(stuffedRun.runLane < 0);
+  assert.match(stuffedRun.feedback, /box|lane/i);
+  assert.ok(lightRun.runLane > 0);
+  assert.match(lightRun.feedback, /deep|light/i);
 });

@@ -25,6 +25,9 @@ export class Game {
     this.currentPlay = PLAYS[0];
     this.playIndex = 0;
     this.target = 'WR1';
+    this.defensiveLook = null;
+    this.readModifier = null;
+    this.lastReadFeedback = '';
     this.status = 'Pick a mode.';
     this.banner = '';
     this.last = performance.now();

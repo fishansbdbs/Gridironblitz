@@ -19,6 +19,7 @@
 .team-chip,
 .score-mid,
 .hud-line,
+.hud-read,
 .hud-status {
   display: flex;
   align-items: center;
@@ -39,14 +40,31 @@
 }
 
 .hud-line,
+.hud-read,
 .hud-status {
   grid-column: 1 / -1;
   justify-content: center;
   font-size: 13px;
 }
 
+.hud-read {
+  flex-wrap: wrap;
+  color: #bfdbfe;
+}
+
 .hud-status {
   color: #facc15;
+}
+
+.read-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 2px 8px;
+  border: 1px solid #facc15;
+  background: #172554;
+  color: #facc15;
+  text-transform: uppercase;
 }
 
 .controls {
@@ -93,13 +111,14 @@
   left: 14px;
   bottom: 14px;
   display: grid;
-  grid-template-columns: 230px 1fr;
+  grid-template-columns: 230px minmax(0, 1fr);
   gap: 8px;
   width: min(920px, calc(100vw - 28px));
   pointer-events: auto;
 }
 
 .play-header,
+.read-panel,
 .route-preview {
   border: 2px solid #dbeafe;
   background: rgba(15, 23, 42, 0.9);
@@ -114,8 +133,20 @@
   font-weight: 900;
 }
 
+.read-panel {
+  display: grid;
+  gap: 5px;
+  padding: 9px 10px;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.read-panel small {
+  color: #bfdbfe;
+}
+
 .route-preview {
-  grid-row: span 2;
   padding: 6px;
 }
 
@@ -126,9 +157,15 @@
 }
 
 .play-grid {
+  grid-column: 2;
+  grid-row: 1 / span 3;
   display: grid;
   grid-template-columns: repeat(4, minmax(120px, 1fr));
   gap: 8px;
+}
+
+.play-select > button {
+  grid-column: 1;
 }
 
 .play-card {
@@ -155,6 +192,8 @@
   }
 
   .play-grid {
+    grid-column: auto;
+    grid-row: auto;
     grid-template-columns: repeat(2, 1fr);
   }
 

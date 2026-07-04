@@ -1,6 +1,6 @@
 # GRIDIRON BLITZ 97
 
-v0.3.0 - Gameplay Feel & Model Upgrade
+v0.4.0 - Pre-Snap Chess Update
 
 Gridiron Blitz 97 is an original low-poly 3D arcade American football game built with Vite, Three.js, HTML, CSS, LocalStorage, and the Web Audio API. It uses fictional teams, fictional players, procedural models, generated sounds, and local-only play.
 
@@ -101,6 +101,8 @@ Blocking is arcade-style: offensive linemen identify rushers, engage on contact,
 Tackling is collision-triggered. Tackle outcomes consider tackling, strength, carrier strength, speed, angle, and nearby helpers. Outcomes include tackle, big hit, gang tackle, and broken tackle.
 
 Passing uses QB accuracy/power, receiver catching/route running, defender coverage, distance, separation, and pressure. Feedback includes open target, under pressure, deflected, intercepted, dropped, and incomplete.
+
+Pre-snap defensive reads add original arcade strategy. The defense can show Edge Heat, Deep Lantern, Stone Box, or Mirror Press based on down, distance, field position, score, team identity, and the selected play type. Each read adds small pressure, coverage, separation, or run-lane modifiers and shows a compact hint in the HUD.
 
 ## Player Stats
 

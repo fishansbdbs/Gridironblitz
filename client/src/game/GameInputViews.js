@@ -112,6 +112,7 @@ export const gameInputViewsMethods = {
       if (event.code === 'ArrowLeft' || event.code === 'KeyA') this.playIndex = (this.playIndex + PLAYS.length - 1) % PLAYS.length;
       if (event.code === 'ArrowRight' || event.code === 'KeyD') this.playIndex = (this.playIndex + 1) % PLAYS.length;
       this.currentPlay = PLAYS[this.playIndex];
+      this.setDefensiveRead?.(this.currentPlay, this.currentPlay.recommendedTarget || this.target);
       if (event.code === 'Enter' || event.code === 'Space') this.callPlay(this.currentPlay);
       else this.renderHud();
     } else if (this.phase === 'pre-snap' && event.code === 'Space') {
@@ -210,10 +211,10 @@ export const gameInputViewsMethods = {
         <h2>Patch Notes</h2>
         <h3>${VERSION} - ${UPDATE_NAME}</h3>
         <ul>
-          <li>Upgraded player models, uniforms, position body types, and transform animations.</li>
-          <li>Added collision separation, blocking engagement, tackle outcomes, and anti-stuck play whistles.</li>
-          <li>Improved passing feedback, receiver routes, AI pursuit, camera modes, stadiums, field logos, and scoreboard presentation.</li>
-          <li>Added fictional player rosters and stat-driven gameplay.</li>
+          <li>Added original defensive looks that respond to down, distance, field position, score, play type, and team identity.</li>
+          <li>Added pre-snap read chips, risk hints, and result feedback so play calls explain why they worked or failed.</li>
+          <li>Connected reads to light pressure, coverage, separation, and run-lane modifiers without replacing blocking, collisions, or tackling.</li>
+          <li>Added an original favicon and cleaned up the browser console resource noise.</li>
         </ul>
         <button data-action="main-menu">Back</button>
       </section>
@@ -253,6 +254,7 @@ export const gameInputViewsMethods = {
     this.phase = 'play-select';
     this.status = this.mode === 'practice' ? 'Practice field loaded. Choose a play.' : 'Exhibition kickoff.';
     this.banner = '';
+    this.setDefensiveRead?.(this.currentPlay, this.target);
     this.ensureAudio();
     this.startCrowd();
     this.renderHud();

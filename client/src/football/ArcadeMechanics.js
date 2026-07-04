@@ -9,6 +9,135 @@ export const POSITION_ARCHETYPES = {
   DB: { speed: 9, acceleration: 8, strength: -2, blocking: -12, tackling: 12, catching: 4, throwAccuracy: -24, throwPower: -20, coverage: 22, agility: 12, mass: 0.96, radius: 0.94 }
 };
 
+export const DEFENSIVE_LOOKS = [
+  {
+    id: 'edge-heat',
+    label: 'Edge Heat',
+    pressure: 0.22,
+    coverage: -0.04,
+    runFit: 0.04,
+    disguise: 0.02,
+    hint: 'Quick inside throws can punish the heat.',
+    risk: 'Slow-developing routes invite pressure.'
+  },
+  {
+    id: 'deep-lantern',
+    label: 'Deep Lantern',
+    pressure: -0.04,
+    coverage: 0.18,
+    runFit: -0.2,
+    disguise: 0.03,
+    hint: 'Light box gives runs and underneath routes room.',
+    risk: 'Deep shots meet extra help.'
+  },
+  {
+    id: 'stone-box',
+    label: 'Stone Box',
+    pressure: 0.02,
+    coverage: -0.02,
+    runFit: 0.24,
+    disguise: 0.01,
+    hint: 'Perimeter or quick passes attack the crowd.',
+    risk: 'Inside runs hit a packed lane.'
+  },
+  {
+    id: 'mirror-press',
+    label: 'Mirror Press',
+    pressure: 0.08,
+    coverage: 0.12,
+    runFit: 0.02,
+    disguise: 0.08,
+    hint: 'Backfield releases and misdirection can shake leverage.',
+    risk: 'Wide receivers fight tight coverage.'
+  }
+];
+
+export function chooseDefensiveLook({ down = 1, toGo = 10, yardLine = 25, scoreMargin = 0, playType = 'pass', defenseTeam, roll = Math.random() } = {}) {
+  const identity = defenseTeam?.gameplay ?? {};
+  const speed = identity.speed ?? ((defenseTeam?.stats?.speed ?? 6) * 10);
+  const power = identity.strength ?? ((defenseTeam?.stats?.power ?? 6) * 10);
+  const coverage = identity.coverage ?? ((defenseTeam?.stats?.defense ?? 6) * 10);
+  const nearGoal = yardLine >= 78 || yardLine <= 12;
+  const thirdAndLong = down >= 3 && toGo >= 6;
+  const shortYardage = toGo <= 2;
+
+  const scores = DEFENSIVE_LOOKS.map((look, index) => {
+    let score = 0.2 + (((roll + index * 0.17) % 1) * 0.08);
+    if (look.id === 'edge-heat') {
+      score += thirdAndLong ? 0.34 : 0;
+      score += playType === 'pass' ? 0.16 : 0;
+      score += speed > 74 ? 0.1 : 0;
+      score += scoreMargin < -6 ? 0.06 : 0;
+    }
+    if (look.id === 'deep-lantern') {
+      score += toGo >= 8 ? 0.22 : 0;
+      score += playType === 'pass' ? 0.08 : 0;
+      score += coverage > 75 ? 0.08 : 0;
+      score += scoreMargin > 6 ? 0.06 : 0;
+    }
+    if (look.id === 'stone-box') {
+      score += shortYardage ? 0.38 : 0;
+      score += playType === 'run' ? 0.18 : 0;
+      score += power > 80 ? 0.1 : 0;
+      score += nearGoal ? 0.06 : 0;
+    }
+    if (look.id === 'mirror-press') {
+      score += toGo > 2 && toGo < 7 ? 0.18 : 0;
+      score += coverage > 68 ? 0.08 : 0;
+      score += playType === 'option' ? 0.08 : 0;
+    }
+    return { ...look, score };
+  });
+
+  scores.sort((a, b) => b.score - a.score);
+  const selected = scores[0];
+  return { ...selected, score: Number(selected.score.toFixed(3)) };
+}
+
+export function resolveReadModifier({ play, look, targetRole } = {}) {
+  const activeLook = look ?? DEFENSIVE_LOOKS[1];
+  const playId = play?.id ?? '';
+  const playType = play?.type ?? 'pass';
+  const quickInside = /quick|drag|slants/.test(playId) || ['TE', 'RB'].includes(targetRole);
+  const perimeter = /sweep|flood|rollout/.test(playId);
+  const deep = /deep|posts/.test(playId);
+  const insideRun = playType === 'run' && /dive/.test(playId);
+  const outsideRun = playType === 'run' && perimeter;
+  const modifier = {
+    pressure: activeLook.pressure ?? 0,
+    coverage: activeLook.coverage ?? 0,
+    separation: 0,
+    runLane: 0,
+    feedback: ''
+  };
+
+  if (activeLook.id === 'edge-heat') {
+    modifier.separation += quickInside ? 1.15 : -0.55;
+    modifier.runLane += outsideRun ? 0.08 : -0.05;
+    modifier.feedback = quickInside ? 'Edge heat punished by the quick read.' : 'Edge heat cracked the pocket.';
+  } else if (activeLook.id === 'deep-lantern') {
+    modifier.separation += deep ? -0.75 : 0.65;
+    modifier.runLane += 0.28;
+    modifier.feedback = playType === 'run' ? 'Deep lantern left a light run box.' : 'Deep lantern protected the roof.';
+  } else if (activeLook.id === 'stone-box') {
+    modifier.separation += quickInside || perimeter ? 0.55 : -0.25;
+    modifier.runLane += insideRun ? -0.34 : outsideRun ? 0.14 : -0.18;
+    modifier.feedback = insideRun ? 'Stone box packed the run lane.' : 'Stone box crowded the middle.';
+  } else {
+    modifier.separation += targetRole === 'RB' || perimeter ? 0.55 : -0.45;
+    modifier.runLane += perimeter ? 0.12 : -0.03;
+    modifier.feedback = perimeter ? 'Mirror press lost leverage to misdirection.' : 'Mirror press squeezed the release.';
+  }
+
+  modifier.pressure += activeLook.disguise ?? 0;
+  modifier.coverage += activeLook.disguise ?? 0;
+  modifier.separation = Number(modifier.separation.toFixed(2));
+  modifier.runLane = Number(modifier.runLane.toFixed(2));
+  modifier.pressure = Number(modifier.pressure.toFixed(2));
+  modifier.coverage = Number(modifier.coverage.toFixed(2));
+  return modifier;
+}
+
 export function archetypeForRole(role) {
   if (role === 'QB') return 'QB';
   if (role === 'RB') return 'RB';

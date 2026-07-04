@@ -1,5 +1,6 @@
 import {
   THREE,
+  clamp,
   distanceXZ,
   nearestDefender,
   resolvePassOutcome
@@ -10,14 +11,18 @@ export const gameRuntimePassingMethods = {
     if (!this.carrier || this.carrier.role !== 'QB' || this.ballMode === 'air') return;
     const target = this.players.find((player) => player.role === role && player.side === this.offense);
     if (!target) return;
-    const pressure = this.qbPressure();
+    const read = this.setDefensiveRead?.(this.currentPlay, role) ?? this.readModifier ?? {};
+    const pressure = clamp(this.qbPressure() + (read.pressure ?? 0), 0, 1);
     const lead = new THREE.Vector3(target.mesh.position.x, 1.6, target.mesh.position.z + this.dir * (5 + target.ratings.routeRunning / 25));
     const defender = nearestDefender(target, this.players);
-    const separation = defender ? Math.max(0.5, distanceXZ(target, defender)) : 8;
+    const separation = defender ? Math.max(0.5, distanceXZ(target, defender) + (read.separation ?? 0)) : 8 + (read.separation ?? 0);
+    const adjustedDefender = defender
+      ? { ...defender, ratings: { ...defender.ratings, coverage: defender.ratings.coverage + (read.coverage ?? 0) * 40 } }
+      : defender;
     this.passOutcome = resolvePassOutcome({
       qb: this.carrier,
       receiver: target,
-      defender,
+      defender: adjustedDefender,
       distance: this.carrier.mesh.position.distanceTo(lead),
       separation,
       pressure,
@@ -32,7 +37,8 @@ export const gameRuntimePassingMethods = {
     this.passStart = this.carrier.mesh.position.clone().add(new THREE.Vector3(0.3, 2.6, 0));
     this.passEnd = lead;
     this.target = role;
-    this.status = this.passOutcome.feedback;
+    this.lastReadFeedback = read.feedback ?? '';
+    this.status = this.lastReadFeedback ? `${this.passOutcome.feedback} - ${this.lastReadFeedback}` : this.passOutcome.feedback;
     this.banner = pressure > 0.55 ? 'UNDER PRESSURE' : 'PASS';
     this.sound('throw');
     this.renderHud();
