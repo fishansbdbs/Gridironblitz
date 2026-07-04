@@ -1,0 +1,1 @@
+export const BALANCE = { playerBaseSpeed: 15, sprintBonus: 8, defenderBaseSpeed: 12, tackleDistance: 2.25, blockDistance: 3.2, passSpeed: 50, catchRadius: 4, interceptRadius: 3.2, lineOfScrimmageGap: 3, firstScoreWins: 14 };

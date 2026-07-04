@@ -1,0 +1,15 @@
+{
+  "name": "gridiron-blitz-97",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "install:all": "npm install && npm install --prefix client",
+    "dev:client": "npm run dev --prefix client",
+    "build:client": "npm run build --prefix client",
+    "preview:client": "npm run preview --prefix client",
+    "play": "node scripts/play.js",
+    "check": "node --test"
+  },
+  "devDependencies": {}
+}

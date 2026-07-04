@@ -1,0 +1,10 @@
+export const PLAYS = [
+  { id: 'quick-slants', name: 'Quick Slants', type: 'pass', description: 'WRs cut inside quickly.', recommendedTarget: 'WR1', routes: { WR1: [[-14, 8], [-5, 18]], WR2: [[14, 8], [5, 18]], TE: [[4, 6], [0, 13]], RB: [[-3, -3], [-7, 7]] } },
+  { id: 'deep-posts', name: 'Deep Posts', type: 'pass', description: 'WRs attack the deep middle.', recommendedTarget: 'WR2', routes: { WR1: [[-18, 12], [-7, 38]], WR2: [[18, 12], [6, 40]], TE: [[4, 8], [9, 22]], RB: [[-4, -2], [-2, 8]] } },
+  { id: 'flood-right', name: 'Flood Right', type: 'pass', description: 'QB rolls right with stacked routes.', recommendedTarget: 'TE', qbRoll: 10, routes: { WR1: [[-16, 12], [6, 26]], WR2: [[18, 8], [22, 24]], TE: [[6, 5], [16, 14]], RB: [[-3, -2], [10, 5]] } },
+  { id: 'smash', name: 'Smash', type: 'pass', description: 'Short outside route plus corner pressure.', recommendedTarget: 'WR1', routes: { WR1: [[-18, 6], [-20, 9]], WR2: [[18, 8], [8, 26]], TE: [[4, 4], [12, 18]], RB: [[-4, -3], [-8, 5]] } },
+  { id: 'hb-dive', name: 'HB Dive', type: 'run', description: 'RB pounds the middle.', recommendedTarget: 'RB', runPath: [[0, 5], [0, 18], [3, 32]], routes: { WR1: [[-17, 12]], WR2: [[17, 12]], TE: [[5, 8]], RB: [[0, 5], [0, 24]] } },
+  { id: 'sweep-left', name: 'Sweep Left', type: 'run', description: 'RB bends outside left.', recommendedTarget: 'RB', runPath: [[-12, 4], [-21, 16], [-16, 32]], routes: { WR1: [[-19, 15]], WR2: [[15, 10]], TE: [[-9, 8]], RB: [[-12, 4], [-21, 26]] } },
+  { id: 'qb-rollout', name: 'QB Rollout', type: 'option', description: 'QB escapes with run/pass option.', recommendedTarget: 'WR2', qbRoll: 13, routes: { WR1: [[-16, 12], [-10, 25]], WR2: [[16, 12], [22, 30]], TE: [[5, 6], [14, 16]], RB: [[-4, -2], [4, 5]] } },
+  { id: 'te-drag', name: 'TE Drag', type: 'pass', description: 'TE crosses shallow middle.', recommendedTarget: 'TE', routes: { WR1: [[-17, 12], [-17, 28]], WR2: [[17, 12], [12, 26]], TE: [[6, 4], [-10, 13]], RB: [[-4, -2], [-6, 6]] } }
+];
